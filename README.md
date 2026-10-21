@@ -1,19 +1,12 @@
-[README.md](https://github.com/user-attachments/files/33770283/README.md)
-# 掌柜智库・Shopkeeper Brain
+[README.md](https://github.com/user-attachments/files/33771318/README.md)
+# 面向设备手册的RAG智能问答系统
 
-> 面向垂直领域（产品手册 / 维修指南 / 技术文档）的企业级智能知识库与问答系统，融合 
->
-> **RAG（检索增强生成）**
->
->  与 
->
-> **知识图谱**
->
->  技术，提供 "文档导入 → 知识构建 → 精准问答" 的完整闭环。
+> 面向垂直领域（产品手册 / 维修指南 / 技术文档）的企业级智能知识库与问答系统，融合
+> **RAG（检索增强生成）** 技术，提供 "文档导入 → 知识构建 → 精准问答" 的完整闭环。
 
 ## 项目简介
 
-掌柜智库是一个基于 LangGraph 编排、以混合检索为核心的智能知识库系统。用户上传 PDF / Markdown 文档后，系统会自动完成解析、切分、向量化、入库与知识图谱构建；用户提问时，系统通过**四路并行召回 + 融合排序 + 重排序**，结合大模型生成带依据的流式回答。
+本项目是一个基于 LangGraph 编排、以混合检索为核心的智能知识库系统。用户上传 PDF / Markdown 文档后，系统会自动完成解析、切分、向量化、入库；用户提问时，系统通过**三路并行召回 + 融合排序 + 重排序**，结合大模型生成带依据的流式回答。
 
 适用于产品手册问答、技术文档检索、企业知识库、售后客服等场景。
 
@@ -26,7 +19,7 @@
 | **文档智能导入**   | 支持 PDF / Markdown 上传，自动解析、切分、向量化、入库             |
 | **复杂文档解析**   | 基于 MineRu/MagicPDF 的 PDF→Markdown 转换，保留表格、公式、图片 |
 | **商品名识别**    | LLM 自动抽取切片所属商品 / 型号，业务定制化召回                     |
-| **多路混合召回**   | 向量检索 + HyDE + 知识图谱查询 + Web 搜索 四路并行              |
+| **多路混合召回**   | 向量检索 + HyDE + Web 搜索 三路并行                      |
 | **RRF 融合排序** | Reciprocal Rank Fusion 合并多路结果，附断崖检测动态截断         |
 | **智能重排序**    | BGE-Reranker-Large 精排，提升答案相关性                   |
 | **流式问答**     | SSE 逐字推送，实时交互                                   |
@@ -51,7 +44,7 @@ flowchart TB
 
     subgraph Workflow["LangGraph 工作流引擎"]
         ImportFlow["导入流程 (7 节点)"]
-        QueryFlow["查询流程 (9 节点)"]
+        QueryFlow["查询流程 (8 节点)"]
     end
 
     subgraph Tools["工具层"]
@@ -64,7 +57,6 @@ flowchart TB
 
     subgraph Store["存储层"]
         Milvus[(Milvus 向量库)]
-        Neo4j[(Neo4j 图数据库)]
         Mongo[(MongoDB 文档库)]
         MinIO[(MinIO 对象存储)]
     end
@@ -119,7 +111,7 @@ PythonProject16/
 
 │   │   ├── agent/                   # LangGraph 查询工作流
 
-│   │   │   ├── main\_graph.py        # 查询流程图定义（9 节点）
+│   │   │   ├── main\_graph.py        # 查询流程图定义（8 节点）
 
 │   │   │   ├── state.py             # 查询状态类型
 
@@ -130,8 +122,6 @@ PythonProject16/
 │   │   │       ├── node\_search\_embedding.py     # 向量检索
 
 │   │   │       ├── node\_search\_embedding\_hyde.py# HyDE 检索
-
-│   │   │       ├── node\_query\_kg.py             # 知识图谱查询
 
 │   │   │       ├── node\_web\_search\_mcp.py       # Web 搜索 (MCP)
 
@@ -148,8 +138,6 @@ PythonProject16/
 │   ├── clients/                     # 外部存储客户端
 
 │   │   ├── milvus\_utils.py          # Milvus 向量库操作
-
-│   │   ├── neo4j\_utils.py           # Neo4j 图数据库操作
 
 │   │   ├── minio\_utils.py           # MinIO 对象存储
 
@@ -195,7 +183,7 @@ PythonProject16/
 | 内存     | >= 16GB（建议 32GB）                                         |
 | 显存     | >= 8GB                                                   |
 | 存储     | >= 50GB（模型缓存）                                            |
-| 依赖服务   | Milvus / Neo4j / MongoDB / MinIO（推荐 Docker Compose 一键部署） |
+| 依赖服务   | Milvus / MongoDB / MinIO（推荐 Docker Compose 一键部署） |
 
 ### 1. 克隆与安装依赖
 
@@ -230,7 +218,7 @@ pip install -e . -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 ### 2. 一键启动依赖中间件（Docker Compose）
 
-仓库内可参考部署文档组织 `docker-compose.yml`（Etcd / MinIO / Milvus / Attu / Neo4j / MongoDB）：
+仓库内可参考部署文档组织 `docker-compose.yml`（Etcd / MinIO / Milvus / Attu / MongoDB）：
 
 
 
@@ -240,7 +228,7 @@ docker compose up -d
 docker compose ps
 ```
 
-各服务默认端口：Milvus `19530`、Neo4j `7474/7687`、MongoDB `27017`、MinIO `9000/9001`、Attu `7000`。
+各服务默认端口：Milvus `19530`、MongoDB `27017`、MinIO `9000/9001`、Attu `7000`。
 
 ### 3. 下载本地模型（ModelScope）
 
@@ -277,7 +265,6 @@ cp .env.example .env
 | 向量化  | `BGE_M3_PATH` / `BGE_DEVICE`                 | BGE-M3 本地路径与设备                      |
 | 重排序  | `BGE_RERANKER_LARGE` / `BGE_RERANKER_DEVICE` | Reranker 路径与设备                      |
 | 向量库  | `MILVUS_URL` / `CHUNKS_COLLECTION`           | Milvus 地址与集合名                       |
-| 图数据库 | `NEO4J_URI` / `NEO4J_PASSWORD`               | Neo4j 连接与密码                         |
 | 文档库  | `MONGO_URL` / `MONGO_DB_NAME`                | MongoDB 连接                          |
 | 对象存储 | `MINIO_ENDPOINT` / `MINIO_BUCKET_NAME`       | MinIO 连接与桶名                         |
 
@@ -393,9 +380,8 @@ flowchart LR
     A -->|确认| M[node_multi_search 分叉]
     M --> V1[node_search_embedding 向量检索]
     M --> V2[node_search_embedding_hyde HyDE]
-    M --> V3[node_query_kg 知识图谱]
-    M --> V4[node_web_search_mcp Web 搜索]
-    V1 & V2 & V3 & V4 --> J[node_join 合并]
+    M --> V3[node_web_search_mcp Web 搜索]
+    V1 & V2 & V3 --> J[node_join 合并]
     J --> R[node_rrf RRF 融合]
     R --> RK[node_rerank 重排序]
     RK --> ANS[node_answer_output 流式生成]
@@ -408,8 +394,7 @@ flowchart LR
 
 | 存储          | 用途    | 核心数据                                                      |
 | ----------- | ----- | --------------------------------------------------------- |
-| **Milvus**  | 向量数据库 | 文档切片（稠密向量 1024 维 + 稀疏向量）、商品名、图谱实体向量                       |
-| **Neo4j**   | 图数据库  | 实体 - 关系知识图谱（Device / Part / Operation / Step / Warning 等） |
+| **Milvus**  | 向量数据库 | 文档切片（稠密向量 1024 维 + 稀疏向量）、商品名                       |
 | **MongoDB** | 文档数据库 | 会话历史、改写后的查询与商品名                                           |
 | **MinIO**   | 对象存储  | 源文件与文档图片持久化                                               |
 
@@ -425,22 +410,8 @@ flowchart LR
 | 向量嵌入   | BGE-M3（稠密 + 稀疏混合向量）+ OpenAI text-embedding-v4 |
 | 重排序    | BGE-Reranker-Large（本地部署）                      |
 | 向量数据库  | Milvus（HNSW / COSINE）                         |
-| 图数据库   | Neo4j Community                               |
 | 文档数据库  | MongoDB                                       |
 | 对象存储   | MinIO                                         |
 | PDF 解析 | MineRu / MagicPDF                             |
 | 前端     | 原生 HTML5 + JS（无框架）                            |
 
-## 📝 说明与致谢
-
-
-
-* 本项目为教学 / 研究性知识库系统，源文档示例存放于 `doc/`，该目录已被 `.gitignore` 排除，不会随仓库上传。
-
-* 敏感信息（API Key、密码、模型绝对路径等）统一存放于 `.env`，请勿提交到版本库。
-
-* 项目细节与部署手册可参考项目配套的《掌柜智库》系列文档（`01 项目全景` / `02 环境配置&服务部署指南` 等）。
-
-## 📜 License
-
-[MIT](LICENSE)
