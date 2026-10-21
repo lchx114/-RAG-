@@ -1,0 +1,106 @@
+# Environment variables and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+
+# Build and package output
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Coverage and test output
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+junit.xml
+
+# IDE and operating-system files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Runtime files
+logs/
+output/
+tmp/
+temp/
+.cache/
+*.log
+*.pid
+*.tmp
+*.bak
+
+# Local databases and service data
+*.db
+*.sqlite
+*.sqlite3
+volumes/
+docker-data/
+milvus_data/
+minio_data/
+mongo_data/
+neo4j_data/
+
+# Downloaded models and checkpoints
+models/
+checkpoints/
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.gguf
+
+# Local source documents and generated media
+doc/
+*.csv
+*.xlsx
+*.xls
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.webp
+*.zip
+*.tar
+*.tar.gz
+
+# Frontend dependencies, if added later
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Jupyter
+.ipynb_checkpoints/

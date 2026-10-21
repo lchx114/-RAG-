@@ -1,0 +1,23 @@
+# Keep repository text files consistent across Windows, macOS, and Linux.
+* text=auto
+
+*.py text eol=lf
+*.html text eol=lf
+*.toml text eol=lf
+*.lock text eol=lf
+*.prompt text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+*.pdf binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.bmp binary
+*.webp binary
+*.xlsx binary
+*.xls binary
+*.zip binary
